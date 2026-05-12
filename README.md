@@ -12,7 +12,7 @@ The pipeline implements a **Medallion Architecture** with three distinct layers:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         DATA FLOW                                │
+│                         DATA FLOW                               │
 └─────────────────────────────────────────────────────────────────┘
 
   📁 Source Files (Volume)              🔄 Auto Loader
@@ -21,14 +21,14 @@ The pipeline implements a **Medallion Architecture** with three distinct layers:
         ▼                                      ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │  BRONZE LAYER - Raw Data Ingestion                               │
-│  ─────────────────────────────────────────────────────────────  │
+│  ─────────────────────────────────────────────────────────────   │
 │  Table: main.bronze.vave_eventsfeed                              │
-│                                                                   │
+│                                                                  │
 │  • Incremental file ingestion with Auto Loader                   │
 │  • Schema evolution support                                      │
 │  • File metadata tracking (_metadata columns)                    │
 │  • Preserves raw source data (append-only)                       │
-│                                                                   │
+│                                                                  │
 │  Columns:                                                        │
 │    - event_id (STRING): Unique event identifier                  │
 │    - event_timestamp (TIMESTAMP): Event occurrence time          │
@@ -42,14 +42,14 @@ The pipeline implements a **Medallion Architecture** with three distinct layers:
         ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │  SILVER LAYER - Enriched & Cleansed Data                         │
-│  ─────────────────────────────────────────────────────────────  │
+│  ─────────────────────────────────────────────────────────────   │
 │  Table: main.silver.vave_eventsfeed                              │
-│                                                                   │
+│                                                                  │
 │  • Event deduplication (MERGE on event_id)                       │
 │  • H3 geospatial index generation (resolution 7)                 │
 │  • Date partitioning (event_dt)                                  │
 │  • Data quality validation                                       │
-│                                                                   │
+│                                                                  │
 │  Columns:                                                        │
 │    - event_id (STRING): Unique event identifier                  │
 │    - event_timestamp (TIMESTAMP): Event occurrence time          │
@@ -64,14 +64,14 @@ The pipeline implements a **Medallion Architecture** with three distinct layers:
         ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │  GOLD LAYER - Aggregated Analytics                               │
-│  ─────────────────────────────────────────────────────────────  │
+│  ─────────────────────────────────────────────────────────────   │
 │  Materialized Views (Auto-Refresh)                               │
-│                                                                   │
+│                                                                  │
 │  1. main.gold.daily_risk_cell                                    │
 │     • Daily aggregations by H3 cell                              │
 │     • Granular geographic risk analysis                          │
 │     • Refresh: TRIGGER ON UPDATE                                 │
-│                                                                   │
+│                                                                  │
 │     Columns:                                                     │
 │       - h3_ix (STRING): H3 cell identifier                       │
 │       - event_dt (DATE): Aggregation date                        │
@@ -80,12 +80,12 @@ The pipeline implements a **Medallion Architecture** with three distinct layers:
 │       - avg_risk_score (DOUBLE): Average risk score              │
 │       - max_risk_score (DOUBLE): Peak risk in cell               │
 │       - min_risk_score (DOUBLE): Minimum risk in cell            │
-│                                                                   │
+│                                                                  │
 │  2. main.gold.daily_risk_zone                                    │
 │     • Daily zone-level aggregations                              │
 │     • High-level risk trend monitoring                           │
 │     • Refresh: TRIGGER ON UPDATE                                 │
-│                                                                   │
+│                                                                  │
 │     Columns:                                                     │
 │       - event_dt (DATE): Aggregation date                        │
 │       - total_events (BIGINT): Total event count                 │
